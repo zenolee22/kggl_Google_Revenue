@@ -1,0 +1,43 @@
+---
+title: "Google Revenue"
+output: html_notebook
+---
+
+
+# Libraries
+
+```{r}
+
+library(data.table)
+library(skimr)
+library(highcharter)
+library(plotly)
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+
+```
+
+# Import Data
+
+```{r}
+
+df.train <- read_csv("G:/Zeno/Kaggle/kggl_Google_Revenue/Data/train.csv", n_max=10000)
+#df.train <- fread("G:/Zeno/Kaggle/kggl_Google_Revenue/Data/train.csv",stringsAsFactors = TRUE, nrows=10000)
+```
+
+```{r}
+head(df.train)
+```
+
+
+
+```{r Json_Conversion, eval=TRUE, message=FALSE, warning=FALSE}
+tr_device <- paste("[", paste(df.train$device, collapse = ","), "]") %>% fromJSON(flatten = T)
+tr_geoNetwork <- paste("[", paste(df.train$geoNetwork, collapse = ","), "]") %>% fromJSON(flatten = T)
+tr_totals <- paste("[", paste(df.train$totals, collapse = ","), "]") %>% fromJSON(flatten = T)
+tr_trafficSource <- paste("[", paste(df.train$trafficSource, collapse = ","), "]") %>% fromJSON(flatten = T)
+
+```
+
