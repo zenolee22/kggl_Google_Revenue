@@ -3,11 +3,14 @@ title: "Google Revenue"
 output: html_notebook
 ---
 
+# Notes
+
+Pretty comprehensive R Tutorials List   
+http://r-statistics.co/
 
 # Libraries
 
-```{r}
-
+```{r Libraries, eval=TRUE, message=TRUE, warning=FALSE}
 library(data.table)
 library(skimr)
 library(highcharter)
@@ -16,22 +19,33 @@ library(jsonlite)
 library(dplyr)
 library(tidyr)
 library(tidyverse)
-
+library(shiny)
+library(ggplot2)
 ```
 
 # Import Data
 
-```{r}
-
-df.train <- read_csv("G:/Zeno/Kaggle/kggl_Google_Revenue/Data/train.csv", n_max=10000)
+```{r Import eval=TRUE, message=FALSE, warning=FALSE}
+filepath <- "/Users/zenolee/R/Kggl_Google_Revenue/Data"
+df.train <- read_csv(paste(filepath, "train.csv",sep="/"), n_max=10000)
 #df.train <- fread("G:/Zeno/Kaggle/kggl_Google_Revenue/Data/train.csv",stringsAsFactors = TRUE, nrows=10000)
 ```
 
-```{r}
-head(df.train)
+```{r summary, eval=TRUE, message=FALSE}
+summary(df.train)
 ```
 
+# Uniqueness
 
+```{r}
+n_distinct(df.train$fullVisitorId)
+n_distinct(df.train$sessionId)
+n_distinct(df.train$visitId)
+
+n_distinct(df.train$visitId,df.train$visitNumber)
+```
+
+There are a total of 903653 rows in the dataset, yet there doesn't appear to be a single field that is unique.  So, there are "dups" in the data
 
 ```{r Json_Conversion, eval=TRUE, message=FALSE, warning=FALSE}
 tr_device <- paste("[", paste(df.train$device, collapse = ","), "]") %>% fromJSON(flatten = T)
@@ -39,5 +53,49 @@ tr_geoNetwork <- paste("[", paste(df.train$geoNetwork, collapse = ","), "]") %>%
 tr_totals <- paste("[", paste(df.train$totals, collapse = ","), "]") %>% fromJSON(flatten = T)
 tr_trafficSource <- paste("[", paste(df.train$trafficSource, collapse = ","), "]") %>% fromJSON(flatten = T)
 
+```
+
+## device
+
+```{r}
+tr_device %>% skim() %>% kable()
+```
+
+```{r}
+str(tr_device)
+```
+
+
+```{r}
+tr_geoNetwork %>% skim()
+```
+
+```{r}
+tr_totals %>% skim()
+```
+
+```{r}
+tr_trafficSource %>% skim()
+```
+
+
+# Data Quality Check Per Table
+
+To make this process more efficient, I want to remove any columns that I don't believe will be necessary.  i.e. if 99% of the data is NULL or Unknown, it will not be significant for modeling.
+
+```{r}
+
+```
+
+
+
+```{r}
+df.train %>% select(-device,-geoNetwork, -totals,-trafficSource) %>% bind_cols(tr_device, tr_geoNetwork, tr_totals, tr_trafficSource)
+```
+
+# ggplot 
+
+```{r}
+ggplot(diamonds) + geom_point(aes(x=carat, y=price, color=cut)) + geom_smooth(aes(x=carat, y=price, color=cut))
 ```
 
